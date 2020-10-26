@@ -25,11 +25,9 @@ public class ParkingManagerImpl<T extends Vehicle> implements ParkingManager<T> 
 	// to map from a slot to a Vehicle
 	private Map<Integer, Optional<T>> slotVehicleMap;
 	
-	@SuppressWarnings("rawtypes")
 	private static ParkingManagerImpl instance = null;
 	
 	// Instantiate a singleton object to make sure only one parking manager instance get instantiated
-	@SuppressWarnings("unchecked")
 	public static <T extends Vehicle> ParkingManagerImpl<T> getInstance(int capacity, Allocation allocation){
 		if(instance == null) {
 			synchronized(ParkingManager.class) {
@@ -52,7 +50,7 @@ public class ParkingManagerImpl<T extends Vehicle> implements ParkingManager<T> 
 			allocation = new AllocationImpl();
 		}
 		this.slotVehicleMap = new ConcurrentHashMap<>();
-		for(int i=1; i<capacity; i++) {
+		for(int i=1; i<=capacity; i++) {
 			slotVehicleMap.put(i, Optional.empty());
 			allocation.addSlot(i);
 		}
