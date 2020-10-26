@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import main.models.Allocation;
 import main.models.AllocationImpl;
 import main.models.Vehicle;
