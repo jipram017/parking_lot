@@ -34,11 +34,21 @@ public class ParkingServiceImpl implements ParkingService {
 		this.manager = ParkingManagerImpl.getInstance(capacity, allot);
 		System.out.println("Created parking lot with " + capacity + " slots");
 	}
+	
+	
+	private void validateParkingLot() throws ParkingException
+	{
+		if (manager == null)
+		{
+			throw new ParkingException(ErrorCode.PARKING_NOT_EXIST_ERROR.getMessage());
+		}
+	}
 
 	@Override
 	public Optional<Integer> park(Vehicle vehicle) throws ParkingException{
 		Optional<Integer> value = Optional.empty();
 		lock.writeLock().lock();
+		validateParkingLot();
 		try {
 			value = Optional.of(manager.parkCar(vehicle));
 			if(value.get() == Constants.NOT_AVAILABLE) {
@@ -61,6 +71,7 @@ public class ParkingServiceImpl implements ParkingService {
 	@Override
 	public void unPark(int slot) throws ParkingException{
 		lock.writeLock().lock();
+		validateParkingLot();
 		try {
 			if(manager.unParkCar(slot)) {
 				System.out.println("Slot number " + slot + " is free");
@@ -79,6 +90,7 @@ public class ParkingServiceImpl implements ParkingService {
 	@Override
 	public Optional<Integer> getAvailableSlot() throws ParkingException{
 		lock.writeLock().lock();
+		validateParkingLot();
 		Optional<Integer> value = Optional.empty();
 		try {
 			value = Optional.of(manager.getAvailableSlot());
@@ -95,6 +107,7 @@ public class ParkingServiceImpl implements ParkingService {
 	@Override
 	public void getParkingStatus() throws ParkingException {
 		lock.writeLock().lock();
+		validateParkingLot();
 		try {
 			System.out.println("Slot No.\tRegistration No.\tColor");
 			List<String> statusList = manager.getParkingStatus();
@@ -117,6 +130,7 @@ public class ParkingServiceImpl implements ParkingService {
 	@Override
 	public void getRegNumsFromColor(String color) throws ParkingException{
 		lock.readLock().lock();
+		validateParkingLot();
 		try {
 			List<String> regNums = manager.getRegNumsFromColor(color);
 			if(regNums.size() == 0) {
@@ -136,6 +150,7 @@ public class ParkingServiceImpl implements ParkingService {
 	@Override
 	public void getSlotNumsFromColor(String color) throws ParkingException{
 		lock.readLock().lock();
+		validateParkingLot();
 		try {
 			List<Integer> slotNums = manager.getSlotNumsFromColor(color);
 			if(slotNums.size() == 0) {
@@ -161,6 +176,7 @@ public class ParkingServiceImpl implements ParkingService {
 	public int getSlotNumFromRegNum(String regNum) throws ParkingException{
 		int value = -1;
 		lock.writeLock().lock();
+		validateParkingLot();
 		try {
 			value = manager.getSlotNumFromRegNum(regNum);
 			System.out.println(value == -1? "Not found" : value);
