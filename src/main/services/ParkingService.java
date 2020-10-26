@@ -16,8 +16,8 @@ public interface ParkingService {
 	public Optional<Integer> park(Vehicle vehicle);
 	public void unPark (int slot);
 	public Optional<Integer> getAvailableSlot();
-	public void getStatus();
-	public int getRegNumFromColor(String color);
-	public int getSlotNumFromRegNo(String regNo);
-	public int getSlotNumFromColor(String color);
+	public void getParkingStatus();
+	public void getRegNumsFromColor(String color);
+	public int getSlotNumFromRegNum(String regNum);
+	public void getSlotNumsFromColor(String color);
 }
