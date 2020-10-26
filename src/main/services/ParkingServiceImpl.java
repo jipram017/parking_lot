@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import main.constant.Constants;
 import main.dao.ParkingManager;
 import main.dao.ParkingManagerImpl;
 import main.models.Allocation;
@@ -38,9 +39,9 @@ public class ParkingServiceImpl implements ParkingService {
 		lock.writeLock().lock();
 		try {
 			value = Optional.of(manager.parkCar(vehicle));
-			if(value.get() == 0) {
+			if(value.get() == Constants.NOT_AVAILABLE) {
 				System.out.println("Sorry, parking lot is full");
-			} else if(value.get() == -1) {
+			} else if(value.get() == Constants.ALREADY_EXIST) {
 				System.out.println("Sorry, vehicle is already parked");
 			} else {
 				System.out.println("Allocated slot number is: " + value.get());
