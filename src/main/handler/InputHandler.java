@@ -4,6 +4,8 @@
 package main.handler;
 
 import main.constant.Constants;
+import main.exception.ErrorCode;
+import main.exception.ParkingException;
 import main.models.Car;
 import main.services.ParkingService;
 import main.services.ParkingServiceImpl;
@@ -12,10 +14,10 @@ import main.services.ParkingServiceImpl;
  * @author ajipramono
  *
  */
-public class InputHandler {
+public class InputHandler implements AbstractHandler{
 	private ParkingService service = new ParkingServiceImpl();
 	
-	public void handle(String input) throws Exception {
+	public void handle(String input) throws ParkingException {
 		String[] inputs = input.split(" ");
 		String key = inputs[0];
 		switch(key) {
@@ -24,7 +26,7 @@ public class InputHandler {
 		    		service.createParkingLot(Integer.parseInt(inputs[1]));
 		    	}
 		    	catch(NumberFormatException e) {
-		    		e.getStackTrace();
+		    		throw new ParkingException(ErrorCode.INVALID_VALUE.getMessage().replace("{variable}", "capacity"));
 		    	}
 			    break;
 		    case Constants.PARK:
@@ -35,7 +37,7 @@ public class InputHandler {
 		    		service.unPark(Integer.parseInt(inputs[1]));
 		    	}
 		    	catch(NumberFormatException e) {
-		    		e.getStackTrace();
+		    		throw new ParkingException(ErrorCode.INVALID_VALUE.getMessage().replace("{variable}", "slot_number"));
 		    	}
 		    	break;
 		    case Constants.STATUS:

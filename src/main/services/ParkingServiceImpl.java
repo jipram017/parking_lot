@@ -11,6 +11,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import main.constant.Constants;
 import main.dao.ParkingManager;
 import main.dao.ParkingManagerImpl;
+import main.exception.ErrorCode;
+import main.exception.ParkingException;
 import main.models.Allocation;
 import main.models.AllocationImpl;
 import main.models.Vehicle;
@@ -24,17 +26,17 @@ public class ParkingServiceImpl implements ParkingService {
 	private ParkingManager<Vehicle> manager = null;
 	
 	@Override
-	public void createParkingLot(int capacity) {
+	public void createParkingLot(int capacity) throws ParkingException{
 		if(manager != null) {
-			System.out.println("Parking lot already exist");
+			throw new ParkingException(ErrorCode.PARKING_ALREADY_EXIST.getMessage());
 		}
 		Allocation allot = new AllocationImpl();
 		this.manager = ParkingManagerImpl.getInstance(capacity, allot);
-		System.out.println("Succesfully created parking lot with " + capacity + " slots");
+		System.out.println("Created parking lot with " + capacity + " slots");
 	}
 
 	@Override
-	public Optional<Integer> park(Vehicle vehicle) {
+	public Optional<Integer> park(Vehicle vehicle) throws ParkingException{
 		Optional<Integer> value = Optional.empty();
 		lock.writeLock().lock();
 		try {
@@ -48,7 +50,7 @@ public class ParkingServiceImpl implements ParkingService {
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -57,7 +59,7 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public void unPark(int slot) {
+	public void unPark(int slot) throws ParkingException{
 		lock.writeLock().lock();
 		try {
 			if(manager.unParkCar(slot)) {
@@ -67,7 +69,7 @@ public class ParkingServiceImpl implements ParkingService {
 			}
 		}
 		catch(Exception e){
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.INVALID_VALUE.getMessage().replace("{variable}", "slot_number"), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -75,14 +77,14 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public Optional<Integer> getAvailableSlot() {
+	public Optional<Integer> getAvailableSlot() throws ParkingException{
 		lock.writeLock().lock();
 		Optional<Integer> value = Optional.empty();
 		try {
 			value = Optional.of(manager.getAvailableSlot());
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -91,7 +93,7 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public void getParkingStatus() {
+	public void getParkingStatus() throws ParkingException {
 		lock.writeLock().lock();
 		try {
 			System.out.println("Slot No.\tRegistration No.\tColor");
@@ -105,7 +107,7 @@ public class ParkingServiceImpl implements ParkingService {
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -113,7 +115,7 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public void getRegNumsFromColor(String color) {
+	public void getRegNumsFromColor(String color) throws ParkingException{
 		lock.readLock().lock();
 		try {
 			List<String> regNums = manager.getRegNumsFromColor(color);
@@ -124,7 +126,7 @@ public class ParkingServiceImpl implements ParkingService {
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -132,7 +134,7 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 
 	@Override
-	public void getSlotNumsFromColor(String color) {
+	public void getSlotNumsFromColor(String color) throws ParkingException{
 		lock.readLock().lock();
 		try {
 			List<Integer> slotNums = manager.getSlotNumsFromColor(color);
@@ -148,7 +150,7 @@ public class ParkingServiceImpl implements ParkingService {
 			}
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
@@ -156,7 +158,7 @@ public class ParkingServiceImpl implements ParkingService {
 	}
 	
 	@Override
-	public int getSlotNumFromRegNum(String regNum) {
+	public int getSlotNumFromRegNum(String regNum) throws ParkingException{
 		int value = -1;
 		lock.writeLock().lock();
 		try {
@@ -164,12 +166,19 @@ public class ParkingServiceImpl implements ParkingService {
 			System.out.println(value == -1? "Not found" : value);
 		}
 		catch(Exception e) {
-			System.out.println(e.getStackTrace());
+			throw new ParkingException(ErrorCode.PROCESSING_ERROR.getMessage(), e);
 		}
 		finally {
 			lock.writeLock().unlock();
 		}
 		return value;
+	}
+	
+	@Override
+	public void doCleanup()
+	{
+		if (manager != null)
+			manager.doCleanup();
 	}
 
 }

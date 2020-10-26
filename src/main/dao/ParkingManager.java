@@ -19,4 +19,5 @@ public interface ParkingManager<T extends Vehicle> {
 	public List<Integer> getSlotNumsFromColor(String color);
 	public int getSlotNumFromRegNum(String regNum);
 	public int getAvailableSlot();
+	public void doCleanup();
 }

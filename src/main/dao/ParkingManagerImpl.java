@@ -141,5 +141,15 @@ public class ParkingManagerImpl<T extends Vehicle> implements ParkingManager<T> 
 	public int getAvailableSlot() {
 		return availability.get();
 	}
+	
+	@Override
+	public void doCleanup()
+	{
+		this.capacity = new AtomicInteger();
+		this.availability = new AtomicInteger();
+		this.allocation = null;
+		slotVehicleMap = null;
+		instance = null;
+	}
 
 }

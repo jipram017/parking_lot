@@ -5,6 +5,7 @@ package main.services;
 
 import java.util.Optional;
 
+import main.exception.ParkingException;
 import main.models.Vehicle;
 
 /**
@@ -12,12 +13,13 @@ import main.models.Vehicle;
  *
  */
 public interface ParkingService {
-	public void createParkingLot(int capacity);
-	public Optional<Integer> park(Vehicle vehicle);
-	public void unPark (int slot);
-	public Optional<Integer> getAvailableSlot();
-	public void getParkingStatus();
-	public void getRegNumsFromColor(String color);
-	public int getSlotNumFromRegNum(String regNum);
-	public void getSlotNumsFromColor(String color);
+	public void createParkingLot(int capacity) throws ParkingException;
+	public Optional<Integer> park(Vehicle vehicle) throws ParkingException;
+	public void unPark (int slot) throws ParkingException;
+	public Optional<Integer> getAvailableSlot() throws ParkingException;
+	public void getParkingStatus() throws ParkingException;
+	public void getRegNumsFromColor(String color) throws ParkingException;
+	public int getSlotNumFromRegNum(String regNum) throws ParkingException;
+	public void getSlotNumsFromColor(String color) throws ParkingException;
+	public void doCleanup() throws ParkingException;
 }
